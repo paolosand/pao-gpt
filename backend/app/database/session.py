@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from contextlib import contextmanager
+from typing import Generator
 from app.config import settings
 
 # Create engine
@@ -27,10 +28,14 @@ def get_db() -> Session:
     finally:
         db.close()
 
-def get_db_dependency():
-    """FastAPI dependency for database sessions"""
+def get_db_dependency() -> Generator[Session, None, None]:
+    """FastAPI dependency for database sessions with transaction management"""
     db = SessionLocal()
     try:
         yield db
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
     finally:
         db.close()

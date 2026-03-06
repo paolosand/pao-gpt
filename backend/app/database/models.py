@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, Integer, TIMESTAMP, JSON, TypeDecorator
+from sqlalchemy import Column, String, Text, Integer, TIMESTAMP, JSON, TypeDecorator, Index, CheckConstraint
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.sql import func
@@ -25,7 +25,10 @@ class UUID(TypeDecorator):
             return str(value)
         else:
             if not isinstance(value, uuid.UUID):
-                return str(uuid.UUID(value))
+                try:
+                    return str(uuid.UUID(value))
+                except ValueError as e:
+                    raise ValueError(f"Invalid UUID string: {value}") from e
             else:
                 return str(value)
 
@@ -41,6 +44,10 @@ Base = declarative_base()
 class Conversation(Base):
     """Conversation storage for analytics"""
     __tablename__ = "conversations"
+    __table_args__ = (
+        Index('ix_conversations_user_id', 'user_id'),
+        Index('ix_conversations_created_at', 'created_at'),
+    )
 
     id = Column(UUID(), primary_key=True, default=uuid.uuid4)
     user_id = Column(String(64), nullable=True)  # Anonymous hash
@@ -52,6 +59,14 @@ class Conversation(Base):
 class KnowledgeUpdate(Base):
     """Knowledge update approval queue"""
     __tablename__ = "knowledge_updates"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('pending', 'approved', 'rejected')",
+            name='valid_status'
+        ),
+        Index('ix_knowledge_updates_status', 'status'),
+        Index('ix_knowledge_updates_created_at', 'created_at'),
+    )
 
     id = Column(UUID(), primary_key=True, default=uuid.uuid4)
     source = Column(String(255), nullable=False)
@@ -63,6 +78,9 @@ class KnowledgeUpdate(Base):
 class QueryPattern(Base):
     """Analytics aggregations"""
     __tablename__ = "query_patterns"
+    __table_args__ = (
+        Index('ix_query_patterns_question_type', 'question_type'),
+    )
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     question_type = Column(String(100), nullable=False)  # experience, project, music
