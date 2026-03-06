@@ -19,8 +19,7 @@ class ConversationRepository:
             conversation_metadata={}
         )
         self.db.add(conv)
-        self.db.commit()
-        self.db.refresh(conv)
+        self.db.flush()  # Get ID without committing
         return conv
 
     def get_conversation(self, conversation_id: str) -> Optional[Conversation]:
@@ -36,8 +35,7 @@ class ConversationRepository:
         conv = self.get_conversation(conversation_id)
         if conv:
             conv.messages = messages
-            self.db.commit()
-            self.db.refresh(conv)
+            self.db.flush()  # Flush without committing
         return conv
 
     def list_conversations(self, user_id: str, limit: int = 10) -> List[Conversation]:
