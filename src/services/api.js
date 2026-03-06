@@ -7,7 +7,7 @@ export async function sendMessage(message, conversationId = null) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      message,
+      query: message,
       conversation_id: conversationId,
     }),
   });
