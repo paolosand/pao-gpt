@@ -2,7 +2,7 @@
 import logging
 from typing import List, Dict
 from app.services.llm import get_llm
-from app.services.vector_store import get_vector_store
+from app.services.knowledge_loader import load_all_knowledge
 from app.agents.chains.personality import SYSTEM_PROMPT
 
 MAX_QUERY_LENGTH = 1000
@@ -10,25 +10,29 @@ MAX_QUERY_LENGTH = 1000
 class RAGChain:
     """
     Retrieval Augmented Generation chain
-    1. Retrieve relevant context from vector store
-    2. Generate response with context + history
+    1. Load all knowledge base documents (full-context prompting)
+    2. Generate response with full context + history
+
+    Note: Using full-context approach instead of vector search because:
+    - Knowledge base is small (~2k tokens vs 1M context window)
+    - Eliminates retrieval ranking issues
+    - Simpler and more reliable for portfolio-sized datasets
     """
 
-    def __init__(self, vector_store=None):
-        self.vector_store = vector_store or get_vector_store()
+    def __init__(self):
         self.llm = get_llm()
 
     async def retrieve(self, query: str) -> List[Dict]:
         """
-        Retrieve relevant documents from vector store
-        Returns: List of {content, metadata} dicts
-        """
-        if self.vector_store is None:
-            return []
+        Load all knowledge base documents for full-context prompting.
 
-        # Search vector store for relevant context
-        results = self.vector_store.similarity_search(query, k=5)
-        return results
+        Returns: List of {content, metadata} dicts containing all portfolio knowledge
+
+        Note: No filtering/ranking needed - knowledge base is small enough (~2k tokens)
+        to pass everything to the LLM every time.
+        """
+        # Load all documents from knowledge base
+        return load_all_knowledge()
 
     async def generate(self, query: str, context: List[Dict], history: List[Dict]) -> str:
         """
