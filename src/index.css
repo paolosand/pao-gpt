@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Brand Colors */
+  --snow: #fbf5f3;
+  --amber-earth: #e28413;
+  --prussian-blue: #000022;
+  --raspberry: #de3c4b;
+  --intense-cherry: #c42847;
+
+  /* Semantic Colors */
+  --bg-primary: var(--snow);
+  --bg-dark: var(--prussian-blue);
+  --bg-overlay: rgba(0, 0, 34, 0.95);
+
+  --text-primary: var(--prussian-blue);
+  --text-light: var(--snow);
+  --text-accent: var(--amber-earth);
+
+  --interactive-primary: var(--amber-earth);
+  --interactive-hover: var(--raspberry);
+  --interactive-active: var(--intense-cherry);
+
+  /* Typography */
+  --font-primary: 'IBM Plex Mono', 'Courier New', monospace;
+  --font-headings: 'Epilogue', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* Transitions */
+  --transition-fast: 150ms;
+  --transition-base: 300ms;
+  --transition-slow: 500ms;
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-primary);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-headings);
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+::selection {
+  background: var(--amber-earth);
+  color: var(--snow);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--prussian-blue);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--amber-earth);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--raspberry);
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--amber-earth);
+  outline-offset: 4px;
+}
+
+/* Utility Classes */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-8);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

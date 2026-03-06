@@ -1,0 +1,98 @@
+.education {
+  background: var(--bg-primary);
+}
+
+.education-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: var(--space-8);
+  max-width: 1000px;
+}
+
+.education-card {
+  padding: var(--space-8);
+  background: linear-gradient(135deg, rgba(226, 132, 19, 0.05), rgba(222, 60, 75, 0.05));
+  border: 2px solid rgba(226, 132, 19, 0.2);
+  border-radius: 12px;
+  transition: all var(--transition-base) var(--ease-smooth);
+}
+
+.education-card:hover {
+  border-color: var(--amber-earth);
+  transform: translateY(-8px);
+  box-shadow: 0 16px 48px rgba(226, 132, 19, 0.15);
+}
+
+.education-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+}
+
+.education-icon {
+  font-size: 2.5rem;
+}
+
+.education-gpa {
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--amber-earth);
+  color: var(--snow);
+  border-radius: 4px;
+}
+
+.education-degree {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--prussian-blue);
+  margin-bottom: var(--space-3);
+  line-height: 1.3;
+}
+
+.education-school {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--raspberry);
+  margin-bottom: var(--space-2);
+}
+
+.education-dates {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--prussian-blue);
+  opacity: 0.6;
+  margin-bottom: var(--space-6);
+}
+
+.education-bullets {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.education-bullet {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--prussian-blue);
+  opacity: 0.8;
+  padding-left: var(--space-6);
+  position: relative;
+}
+
+.education-bullet::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--raspberry);
+  font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .education-grid {
+    grid-template-columns: 1fr;
+  }
+}
