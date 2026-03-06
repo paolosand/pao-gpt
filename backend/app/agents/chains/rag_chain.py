@@ -2,6 +2,7 @@
 import logging
 from typing import List, Dict
 from app.services.llm import get_llm
+from app.services.vector_store import get_vector_store
 from app.agents.chains.personality import SYSTEM_PROMPT
 
 MAX_QUERY_LENGTH = 1000
@@ -14,7 +15,7 @@ class RAGChain:
     """
 
     def __init__(self, vector_store=None):
-        self.vector_store = vector_store
+        self.vector_store = vector_store or get_vector_store()
         self.llm = get_llm()
 
     async def retrieve(self, query: str) -> List[Dict]:
@@ -23,13 +24,11 @@ class RAGChain:
         Returns: List of {content, metadata} dicts
         """
         if self.vector_store is None:
-            # Stub: Return empty context for now
             return []
 
-        # TODO: Implement after ChromaDB setup in Task 4
-        # results = self.vector_store.similarity_search(query, k=5)
-        # return results
-        return []
+        # Search vector store for relevant context
+        results = self.vector_store.similarity_search(query, k=5)
+        return results
 
     async def generate(self, query: str, context: List[Dict], history: List[Dict]) -> str:
         """
