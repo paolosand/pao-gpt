@@ -1,7 +1,10 @@
 """RAG chain for retrieval and generation"""
+import logging
 from typing import List, Dict
 from app.services.llm import get_llm
 from app.agents.chains.personality import SYSTEM_PROMPT
+
+MAX_QUERY_LENGTH = 1000
 
 class RAGChain:
     """
@@ -32,14 +35,22 @@ class RAGChain:
         """
         Generate response using context and conversation history
         """
-        # Format context
-        context_text = self._format_context(context)
+        # Validate input
+        if not query or not query.strip():
+            return "Please provide a question."
 
-        # Format history
-        history_text = self._format_history(history)
+        if len(query) > MAX_QUERY_LENGTH:
+            return f"Your question is too long (max {MAX_QUERY_LENGTH} characters). Please shorten it."
 
-        # Build prompt
-        prompt = f"""{SYSTEM_PROMPT}
+        try:
+            # Format context
+            context_text = self._format_context(context)
+
+            # Format history
+            history_text = self._format_history(history)
+
+            # Build prompt
+            prompt = f"""{SYSTEM_PROMPT}
 
 CONTEXT FROM KNOWLEDGE BASE:
 {context_text if context_text else "No relevant context found."}
@@ -51,9 +62,13 @@ USER QUESTION: {query}
 
 RESPONSE:"""
 
-        # Generate with LLM
-        response = await self.llm.ainvoke(prompt)
-        return response.content
+            # Generate with LLM
+            response = await self.llm.ainvoke(prompt)
+            return response.content
+        except Exception as e:
+            # Log the error
+            logging.error(f"LLM generation error: {e}")
+            return "I'm having trouble generating a response right now. Could you try rephrasing your question?"
 
     def _format_context(self, context: List[Dict]) -> str:
         """Format context documents for prompt"""

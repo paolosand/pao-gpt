@@ -1,0 +1,41 @@
+import pytest
+from app.agents.chains.rag_chain import RAGChain
+
+@pytest.mark.asyncio
+async def test_rag_chain_validates_empty_query():
+    """Test that empty queries are rejected"""
+    rag = RAGChain(None)
+    response = await rag.generate("", [], [])
+    assert "provide a question" in response.lower()
+
+@pytest.mark.asyncio
+async def test_rag_chain_validates_long_query():
+    """Test that overly long queries are rejected"""
+    rag = RAGChain(None)
+    long_query = "a" * 1001
+    response = await rag.generate(long_query, [], [])
+    assert "too long" in response.lower()
+
+@pytest.mark.asyncio
+async def test_format_context():
+    """Test context formatting"""
+    rag = RAGChain(None)
+    context = [
+        {"content": "Paolo works at Nuts and Bolts AI", "metadata": {"source": "experience.md"}},
+        {"content": "He studied at CalArts", "metadata": {"source": "education.md"}}
+    ]
+    formatted = rag._format_context(context)
+    assert "Paolo works at Nuts and Bolts AI" in formatted
+    assert "source:" in formatted.lower()
+
+@pytest.mark.asyncio
+async def test_format_history():
+    """Test history formatting"""
+    rag = RAGChain(None)
+    history = [
+        {"role": "user", "content": "Hi"},
+        {"role": "assistant", "content": "Hello!"}
+    ]
+    formatted = rag._format_history(history)
+    assert "USER: Hi" in formatted
+    assert "ASSISTANT: Hello!" in formatted

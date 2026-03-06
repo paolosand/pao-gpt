@@ -1,6 +1,7 @@
 """Content filtering and safety guard chain"""
 import re
 import random
+import logging
 from typing import Tuple
 from dataclasses import dataclass
 from app.agents.chains.personality import WITTY_REJECTION_RESPONSES
@@ -20,31 +21,41 @@ class GuardChain:
     - Filter sensitive info requests
     """
 
-    MALICIOUS_PATTERNS = [
-        r"ignore (previous|all) (instructions|prompts|rules)",
-        r"forget (everything|all|your instructions)",
-        r"you are now",
-        r"new (instructions|prompt|system message|role)",
-        r"reveal your (prompt|system|instructions)",
+    PROMPT_INJECTION_PATTERNS = [
+        r"ignore\s+(previous|all|any)\s+(instructions?|prompts?|rules?|directives?)",
+        r"forget\s+(everything|all|previous)",
+        r"you\s+are\s+now",
+        r"new\s+instructions?",
+        r"system\s+prompt",
+        r"disregard\s+(previous|above|all)",
+        r"act\s+as",
+        r"pretend\s+(you|to)\s+(are|be)",
+        r"roleplay\s+as",
+        r"what\s+(are|were)\s+your\s+(original\s+)?instructions?",
+        r"show\s+me\s+your\s+prompt",
+        r"bypass",
+        r"override",
         r"<script>",  # XSS attempts
         r"DROP TABLE",  # SQL injection
         r"<\s*script",  # More XSS variations
     ]
 
-    SENSITIVE_INFO_REQUESTS = [
-        r"(phone|cell|mobile) number",
-        r"home address",
-        r"social security",
-        r"credit card",
+    SENSITIVE_INFO_PATTERNS = [
+        r"phone\s+number",
+        r"home\s+address",
+        r"social\s+security",
+        r"credit\s+card",
         r"password",
-        r"mother'?s maiden name",
+        r"api\s+key",
+        r"family\s+members?",
+        r"(mother|father|sibling|parent).*name",
     ]
 
     def check(self, message: str) -> GuardResult:
         """Check if message is malicious or requests sensitive info"""
 
         # Check for prompt injection
-        for pattern in self.MALICIOUS_PATTERNS:
+        for pattern in self.PROMPT_INJECTION_PATTERNS:
             if re.search(pattern, message, re.IGNORECASE):
                 return GuardResult(
                     is_malicious=True,
@@ -53,7 +64,7 @@ class GuardChain:
                 )
 
         # Check for sensitive info requests
-        for pattern in self.SENSITIVE_INFO_REQUESTS:
+        for pattern in self.SENSITIVE_INFO_PATTERNS:
             if re.search(pattern, message, re.IGNORECASE):
                 return GuardResult(
                     is_malicious=True,
