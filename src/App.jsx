@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import TopBar from './components/layout/TopBar';
 import ChatInterface from './components/chat/ChatInterface';
@@ -13,6 +13,10 @@ import './App.css';
 
 function App() {
   const [currentView, setCurrentView] = useState('chat');
+
+  useEffect(() => {
+    document.body.style.overflow = currentView === 'chat' ? 'hidden' : 'auto';
+  }, [currentView]);
 
   return (
     <div className="app">

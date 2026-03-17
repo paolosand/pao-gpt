@@ -4,6 +4,7 @@
   padding: var(--space-5) var(--space-6);
   border-top: 1px solid var(--border-color);
   background: var(--bg-primary);
+  flex-shrink: 0;
 }
 
 .chat-input {
