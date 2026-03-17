@@ -61,17 +61,7 @@ const Contact = () => {
             </div>
           </motion.div>
 
-          <motion.div
-            className="contact-decoration"
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="decoration-circle circle-1"></div>
-            <div className="decoration-circle circle-2"></div>
-            <div className="decoration-circle circle-3"></div>
-          </motion.div>
+
         </div>
 
         <div className="contact-footer">
