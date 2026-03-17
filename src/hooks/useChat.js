@@ -1,9 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { sendMessage } from '../services/api';
 
 export function useChat() {
   const [messages, setMessages] = useState([]);
   const [conversationId, setConversationId] = useState(null);
+  const conversationIdRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -20,10 +21,11 @@ export function useChat() {
     setError(null);
 
     try {
-      const response = await sendMessage(userMessage, conversationId);
+      const response = await sendMessage(userMessage, conversationIdRef.current);
 
       // Update conversation ID if new
-      if (!conversationId) {
+      if (!conversationIdRef.current) {
+        conversationIdRef.current = response.conversation_id;
         setConversationId(response.conversation_id);
       }
 
@@ -41,11 +43,12 @@ export function useChat() {
     } finally {
       setIsLoading(false);
     }
-  }, [conversationId]);
+  }, []);
 
   const reset = useCallback(() => {
     setMessages([]);
     setConversationId(null);
+    conversationIdRef.current = null;
     setError(null);
   }, []);
 

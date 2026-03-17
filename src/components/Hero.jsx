@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import portfolioData from '../data/portfolio.json';
 import './Hero.css';
 
-const Hero = ({ onExploreMaze }) => {
+const Hero = ({ onChatClick }) => {
   const { personal, summary, valueProps } = portfolioData;
 
   const containerVariants = {
@@ -69,9 +69,9 @@ const Hero = ({ onExploreMaze }) => {
               View Projects
               <span className="btn-icon">→</span>
             </a>
-            <button onClick={onExploreMaze} className="btn btn-explore">
-              Explore Interactive Portfolio
-              <span className="btn-icon">✦</span>
+            <button onClick={onChatClick} className="btn btn-secondary">
+              Chat with pao-gpt
+              <span className="btn-icon">💬</span>
             </button>
           </motion.div>
 

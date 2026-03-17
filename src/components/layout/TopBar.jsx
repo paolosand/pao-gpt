@@ -1,6 +1,6 @@
 import './TopBar.css';
 
-export default function TopBar({ currentView, onViewChange, onContactClick }) {
+export default function TopBar({ currentView, onViewChange }) {
   return (
     <div className="top-bar">
       <div className="top-bar-left">
@@ -20,19 +20,9 @@ export default function TopBar({ currentView, onViewChange, onContactClick }) {
         >
           📋 Portfolio
         </button>
-        <button
-          className={`view-toggle ${currentView === 'graph' ? 'active' : ''}`}
-          onClick={() => onViewChange('graph')}
-        >
-          🕸️ Graph
-        </button>
       </div>
 
-      <div className="top-bar-right">
-        <button className="icon-btn" onClick={onContactClick} aria-label="Contact info">
-          ℹ️
-        </button>
-      </div>
+      <div className="top-bar-right"></div>
     </div>
   );
 }

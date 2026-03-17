@@ -1,6 +1,7 @@
 """Conversation repository for database operations"""
 from typing import List, Dict, Optional
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.attributes import flag_modified
 from app.database.models import Conversation
 import uuid
 
@@ -35,7 +36,8 @@ class ConversationRepository:
         conv = self.get_conversation(conversation_id)
         if conv:
             conv.messages = messages
-            self.db.flush()  # Flush without committing
+            flag_modified(conv, 'messages')
+            self.db.flush()
         return conv
 
     def list_conversations(self, user_id: str, limit: int = 10) -> List[Conversation]:

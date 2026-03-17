@@ -43,7 +43,7 @@
 .skill-category-title {
   font-size: 1.3rem;
   font-weight: 700;
-  color: var(--prussian-blue);
+  color: var(--text-primary);
 }
 
 .skill-list {
@@ -57,7 +57,7 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-2) var(--space-3);
-  background: rgba(251, 245, 243, 0.5);
+  background: rgba(251, 245, 243, 0.06);
   border-radius: 4px;
   transition: all var(--transition-fast);
 }
@@ -74,7 +74,7 @@
 .skill-name {
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--prussian-blue);
+  color: var(--text-primary);
 }
 
 /* Responsive */

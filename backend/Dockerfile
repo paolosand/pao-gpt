@@ -14,11 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application
 COPY app/ ./app/
-# COPY data/ ./data/  # Will be created at runtime
-# COPY scripts/ ./scripts/  # Scripts will be added in future tasks
-
-# Create data directory for ChromaDB
-RUN mkdir -p /app/data/chroma
+COPY data/ ./data/
 
 # Expose port
 EXPOSE 8000

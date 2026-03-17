@@ -45,3 +45,4 @@ backend/data/
 # Backend Test Scripts
 backend/test_*.py
 backend/scripts/test_*.py
+.vercel

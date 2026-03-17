@@ -10,6 +10,13 @@
   --accent-hover: #de3c4b;
   --border-color: rgba(251, 245, 243, 0.1);
 
+  /* Portfolio palette */
+  --prussian-blue: #020b1a;
+  --amber-earth: #e28413;
+  --raspberry: #de3c4b;
+  --intense-cherry: #b01c2e;
+  --snow: #fbf5f3;
+
   /* Typography */
   --font-primary: 'IBM Plex Mono', 'Courier New', monospace;
   --font-headings: 'Epilogue', -apple-system, sans-serif;
@@ -22,9 +29,14 @@
   --space-5: 20px;
   --space-6: 24px;
   --space-8: 32px;
+  --space-12: 48px;
+  --space-20: 80px;
 
   /* Effects */
   --transition: 0.2s ease;
+  --transition-base: 0.2s;
+  --transition-fast: 0.15s;
+  --ease-smooth: cubic-bezier(0.6, 0.05, 0.01, 0.9);
   --border-radius: 12px;
 }
 

@@ -75,7 +75,7 @@ const Contact = () => {
         </div>
 
         <div className="contact-footer">
-          <p>© 2026 {personal.name}. Built with React + Framer Motion + p5.js</p>
+          <p>© 2026 {personal.name}. Built with React + Framer Motion</p>
         </div>
       </div>
     </section>
