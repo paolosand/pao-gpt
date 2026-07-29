@@ -67,4 +67,4 @@ Paolo's daily driver is Claude Code — used for all projects from brainstorming
 - Email: pjsandejas@gmail.com
 - GitHub: https://github.com/paolosand
 - LinkedIn: https://www.linkedin.com/in/paolosand
-- Location: Glendale, CA
+- Location: Los Angeles, CA

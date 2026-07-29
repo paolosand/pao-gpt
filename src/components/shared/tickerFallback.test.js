@@ -11,21 +11,21 @@ test('fallback lines are well-formed', () => {
   }
 });
 
-test('status line is glendale-labelled and includes the time', () => {
+test('status line is los-angeles-labelled and includes the time', () => {
   const line = formatStatusLine(D);
-  assert.equal(line.label, 'glendale');
+  assert.equal(line.label, 'los angeles');
   assert.match(line.text, /9:14/);
 });
 
 test('buildTickerLines prepends time and uses feed when present', () => {
   const feed = { lines: [{ id: 'gh:x', label: 'building', text: 'stuff', source: 'github' }] };
   const lines = buildTickerLines(feed, D);
-  assert.equal(lines[0].label, 'glendale');
+  assert.equal(lines[0].label, 'los angeles');
   assert.equal(lines[1].id, 'gh:x');
 });
 
 test('buildTickerLines falls back when feed empty', () => {
   const lines = buildTickerLines({ lines: [] }, D);
-  assert.equal(lines[0].label, 'glendale');
+  assert.equal(lines[0].label, 'los angeles');
   assert.equal(lines[1].id, TICKER_FALLBACK[0].id);
 });

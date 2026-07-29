@@ -28,7 +28,7 @@ export default function TopBar({ view, setView, onMusicClick }) {
       </nav>
       <div className="tb-meta">
         <div><b>v0.4.1</b> · march 2026</div>
-        <div>printed in glendale, ca</div>
+        <div>printed in los angeles, ca</div>
       </div>
     </header>
   );

@@ -42,7 +42,7 @@ export default function Contact() {
             </div>
             <div className="addr last">
               <span className="lbl">return address</span>
-              glendale, california · 34.146°n
+              los angeles, california · 34.052°n
             </div>
           </div>
         </div>

@@ -40,7 +40,7 @@ function App() {
           <Contact />
           <footer className="app-footer">
             <span>© paolo sandejas · made by hand & by machine</span>
-            <span>printed in glendale, ca · 2026<span className="blink"></span></span>
+            <span>printed in los angeles, ca · 2026<span className="blink"></span></span>
           </footer>
         </>
       )}

@@ -14,7 +14,7 @@ export function formatStatusLine(date) {
     timeZone: 'America/Los_Angeles', hour: 'numeric', hour12: false,
   }).format(date));
   const status = hour < 5 ? 'probably still up' : hour < 12 ? 'caffeinating' : hour < 18 ? 'heads down' : 'shipping';
-  return { id: 'time', label: 'glendale', text: `${t} · ${status}`, source: 'time' };
+  return { id: 'time', label: 'los angeles', text: `${t} · ${status}`, source: 'time' };
 }
 
 export function buildTickerLines(feed, date) {
