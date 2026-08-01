@@ -139,6 +139,8 @@ The project asks: what does responsible, artist-driven AI look like in a creativ
 ---
 
 ## Multi-Modal Video Analysis System
-**Technologies:** Gemini API, concurrent processing, Python
+**Technologies:** Gemini 2.5 Flash Lite, Python, transcript scraping, video metadata API, Gradio
 
-Real-time video analysis pipeline with concurrent processing for low-latency response. Built at Nuts and Bolts AI for production deployment serving thousands of users.
+The video-understanding layer behind a real-time AI watch-along companion, built at Nuts and Bolts AI for a social watch-party client (name confidential). A hybrid, degradation-tolerant pipeline: Gemini handles video understanding, a scraping service pulls real transcripts, and a metadata API supplies the rest. Because any given video may have all, some, or none of those signals, the analyzer selects one of three prompt variants based on which signals actually exist, rather than failing or hallucinating around a missing transcript. A Gradio interface was used for interactive testing, and the engine was explicitly packaged for client handoff with an integration guide listing which files to copy and in what order.
+
+Accuracy note: this was a research and handoff deliverable, not a production service. Do not claim production deployment or any user count for it.

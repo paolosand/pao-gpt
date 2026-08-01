@@ -17,7 +17,7 @@ export default function Hero({ onChatClick }) {
         <div className="hero-left">
           <div className="eyebrow">
             <span className="pulse"></span>
-            now · open to ml + creative tech roles · los angeles, ca
+            now · available for full-time ml + creative tech roles · los angeles, ca
           </div>
           <h1 className="hero-title">
             paolo<span className="acc-pink">.</span><br />

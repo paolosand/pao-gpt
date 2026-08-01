@@ -7,7 +7,7 @@
     "github": "https://github.com/paolosand",
     "linkedin": "https://www.linkedin.com/in/paolosand"
   },
-  "summary": "AI/ML engineer and recording artist building tools at the intersection of code and creativity. 2+ years shipping production systems. Specializing in generative AI, computer vision, full-stack development — with a musician's instinct for what makes a tool worth using.",
+  "summary": "AI/ML engineer and recording artist building tools at the intersection of code and creativity. 2+ years shipping production systems. Specializing in generative AI, computer vision, full-stack development — with a musician's instinct for what makes a tool worth using. Available now for full-time roles.",
   "valueProps": [
     {
       "title": "Ships Production AI",
@@ -26,14 +26,16 @@
     {
       "company": "Nuts and Bolts AI",
       "role": "Software Engineer Consultant",
-      "dates": "Jun 2025 — Present",
+      "dates": "Jun 2025 — Jul 2026",
       "bullets": [
-        "Sole engineer on an executive coaching platform for a Fortune 500 outplacement firm — product design through deployment. Next.js, Node.js, Supabase, Cal.com. 200+ users, live Q4 2026.",
-        "Built a full-stack affiliate merchandise storefront for a major restaurant chain. Instagram API integration populates storefronts; images filtered for explicit content. Next.js, Node.js, Supabase.",
-        "Delivered a major frontend redesign for a B2C video platform — Figma MCP + Claude Code compressed what was estimated as a 6-month scope to 2 months. Next.js.",
-        "Built an AI blog publishing tool with automated fact-verification and image generation for a Hispanic legal marketing platform. Next.js, FastAPI, CrewAI, OpenAI API, Supabase.",
-        "Prototyped a watch-along AI agent for video platforms using Gemini's multimodal YouTube integration for time-stamped chat responses.",
-        "All projects built with Claude Code as primary development environment."
+        "Full-stack and QA engineer on a live creator-commerce platform that grew from zero to 12,700+ accounts in the seven weeks he was on it. Proposed and ran the platform's first full-stack security audit — 18 verified findings including two critical payment-integrity issues — built the gated CI/CD database-migration pipeline now used for every production release, and shipped the onboarding flow end-to-end. Next.js 16, React 19, FastAPI, Supabase, Stripe.",
+        "Built the end-to-end AI content pipeline for a legal-marketing platform — news ingestion across a curated source allow-list, LLM relevance ranking, multi-agent topic suggestion, and cited long-form generation — owning 56% of the production Python backend and merging 26 of 30 pull requests across five repositories. Flask, CrewAI, OpenAI, Perplexity, Supabase, React.",
+        "Authored an 870-line historical back-testing harness that replays a non-deterministic news pipeline day-by-day via a simulated-date parameter and measures day-over-day article overlap — creating reproducible, quantitative QA for an AI system that previously produced one unrepeatable sample per day.",
+        "Sole engineer on an executive coaching platform for a global outplacement firm — 99.4% of 1,389 commits across nine months. 124 API routes, a 21-table Postgres schema with 68 migrations and 99 row-level-security policies, three role-scoped portals, and a deep calendar-OAuth scheduling integration. Next.js 15, Supabase, serverless PDF/DOCX reporting. ~200 users.",
+        "Lead front-end and platform engineer on that firm's 12,000-user career-transition platform. Led the redesign across all 18 product sections and authored the design system; found and closed a class of authorization weaknesses across the API surface, replacing per-route checks with a guard that fails safe by default; built the repository's first CI gate. Next.js 16, Payload CMS, PostgreSQL, Fly.io.",
+        "Lead frontend engineer on a 7-week Figma-to-code redesign of a live social watch-party platform — a full visual redesign shipped into a legacy React/Redux monorepo with an Electron desktop counterpart, without a rewrite — and sole engineer on its real-time AI companion, a Gemini agent built as middleware in the app's own state layer that comments on video at exact timestamps in party chat, with no backend access.",
+        "Built the human-in-the-loop content review pipeline gating every publish on an affiliate merchandise storefront for a national consumer brand — data model, admin queue APIs, reviewer tooling, and access control at the public API boundary — plus the transactional email system and six schema migrations against live user data. React 18 + Vite, Node serverless, Supabase. Delivered and handed off for client rollout.",
+        "Built every project with Claude Code as the primary development environment."
       ]
     },
     {
@@ -145,9 +147,9 @@
     {
       "id": "video-analysis",
       "title": "Multi-Modal Video Analysis",
-      "subtitle": "Concurrent Gemini pipeline · production",
-      "description": "Real-time video analysis pipeline with concurrent processing for low-latency response. Built for production deployment at Nuts and Bolts AI, serving thousands of users.",
-      "tags": ["Gemini API", "Concurrent", "Python", "Production", "Multi-Modal"],
+      "subtitle": "Degradation-tolerant Gemini pipeline",
+      "description": "The video-understanding layer behind a real-time AI watch-along companion, built at Nuts and Bolts AI. Gemini handles video analysis, a scraping service pulls transcripts, and a metadata API supplies the rest — but any given video may have all, some, or none of those signals, so the analyzer selects one of three prompt variants based on what actually exists rather than failing or hallucinating around a missing transcript. Packaged for client handoff with an integration guide.",
+      "tags": ["Gemini API", "Python", "Multi-Modal", "Prompt Engineering", "Pipeline Design"],
       "category": "ml",
       "featured": false,
       "links": {
@@ -161,7 +163,8 @@
     "AI & ML": ["scikit-learn", "Audio ML", "Computer Vision", "LangChain", "CrewAI", "ReAct Agents", "RAG", "Feature Matching", "KNN", "MediaPipe", "PyTorch"],
     "ML Infrastructure": ["SageMaker", "Hugging Face Spaces", "Jupyter", "Model Deployment", "Evaluation", "Data Processing", "Docker"],
     "APIs & Tools": ["Gemini API", "OpenAI API", "Claude API", "Claude Code", "Figma MCP", "Cal.com", "Rapid API"],
-    "Full-Stack": ["Next.js", "Node.js", "FastAPI", "Supabase", "PostgreSQL", "Vercel"],
+    "Full-Stack": ["Next.js", "React", "Redux", "Vite", "Node.js", "FastAPI", "Payload CMS", "Supabase", "PostgreSQL", "Vercel", "Fly.io"],
+    "Data & Security": ["Row-Level Security", "Schema Migrations", "Access Control", "Threat Modeling", "Stripe", "Idempotency", "OAuth 2.0", "CI/CD Pipelines", "Sentry", "Playwright"],
     "Creative Tech": ["ChucK", "Max/MSP", "Ableton", "TouchDesigner", "Arduino", "Tone.js", "Three.js", "p5.js", "GSAP", "librosa", "OSC"]
   }
 }
