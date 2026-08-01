@@ -15,7 +15,7 @@ const MUSIC_DATA = {
   links: [
     { label: 'Spotify', url: 'https://open.spotify.com/artist/7aerdWadzubpu06Oxysg6R', cls: 'spotify' },
     { label: 'Apple Music', url: 'https://music.apple.com/us/artist/paolo-sandejas/1404323148', cls: 'apple' },
-    { label: 'SoundCloud', url: 'https://soundcloud.com/paolosandejas', cls: 'sc' },
+    { label: 'SoundCloud', url: 'https://soundcloud.com/paolosand', cls: 'sc' },
   ],
 };
 

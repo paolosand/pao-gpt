@@ -91,7 +91,7 @@ export default function ArtistModal({ onClose }) {
             <div className="artist-socials">
               <a href="https://open.spotify.com/artist/7aerdWadzubpu06Oxysg6R" target="_blank" rel="noopener noreferrer">Spotify</a>
               <a href="https://music.apple.com/us/artist/paolo-sandejas/1404323148" target="_blank" rel="noopener noreferrer">Apple Music</a>
-              <a href="https://soundcloud.com/paolosandejas" target="_blank" rel="noopener noreferrer">SoundCloud</a>
+              <a href="https://soundcloud.com/paolosand" target="_blank" rel="noopener noreferrer">SoundCloud</a>
               <a href="https://www.tiktok.com/@paolosandejas" target="_blank" rel="noopener noreferrer">TikTok</a>
               <a href="https://www.instagram.com/paolosandejas" target="_blank" rel="noopener noreferrer">Instagram</a>
             </div>

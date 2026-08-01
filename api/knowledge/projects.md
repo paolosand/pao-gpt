@@ -124,7 +124,7 @@ Wearable gestural instrument for DJs and dancers. Two ultrasonic distance sensor
 
 ## Parallel Paths — AI × Music Art Installation
 **Technologies:** Gemini API (co-writing), Suno (co-production)
-**Listen:** https://soundcloud.com/paolosandejas/sets/inbetweens
+**Listen:** https://soundcloud.com/paolosand/sets/inbetweens
 
 Exhibited as a listening installation at CalArts (2024).
 

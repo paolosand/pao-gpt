@@ -25,7 +25,7 @@ OPM indie / alternative / singer-songwriter. Scene: Lola Amour, Any Name's Okay,
 - *Purple Afternoon* EP — 2020
 - *BLOOM* EP — 2023
 - *The World Is So Small* — debut album (2024)
-- *Inbetweens* — full AI-assisted album (2024, SoundCloud): https://soundcloud.com/paolosandejas/sets/inbetweens
+- *Inbetweens* — full AI-assisted album (2024, SoundCloud): https://soundcloud.com/paolosand/sets/inbetweens
 - Sophomore album in progress, target release early 2027
 
 ## AI & Music — Parallel Paths Project
@@ -40,7 +40,7 @@ The project asks: what does responsible, artist-driven AI look like in a creativ
 ## Streaming & Social
 - Spotify: https://open.spotify.com/artist/7aerdWadzubpu06Oxysg6R
 - Apple Music: https://music.apple.com/us/artist/paolo-sandejas/1404323148
-- SoundCloud: https://soundcloud.com/paolosandejas
+- SoundCloud: https://soundcloud.com/paolosand
 
 ## Press
 For press coverage, articles, and editorial: google "Paolo Sandejas"

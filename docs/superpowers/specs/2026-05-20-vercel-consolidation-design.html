@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Design: Consolidate to Single Vercel Deployment</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: #0d0d14;
+    color: #e2e2f0;
+    line-height: 1.7;
+    padding: 48px 24px 96px;
+  }
+
+  .page {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    border-bottom: 1px solid #2a2a3d;
+    padding-bottom: 28px;
+    margin-bottom: 40px;
+  }
+
+  .header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.3px;
+    margin-bottom: 12px;
+  }
+
+  .meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 4px;
+    background: #1e1e2e;
+    color: #888;
+    border: 1px solid #2a2a3d;
+  }
+
+  .badge.approved {
+    background: #0d2b1a;
+    color: #3ddc84;
+    border-color: #1a5c38;
+  }
+
+  /* Sections */
+  section {
+    margin-bottom: 44px;
+  }
+
+  h2 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #f97316;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  h2::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #1e1e2e;
+  }
+
+  h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #a0a0c0;
+    margin: 20px 0 8px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  p { margin-bottom: 12px; color: #c0c0d8; }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 12px;
+  }
+
+  ul li {
+    padding: 4px 0 4px 20px;
+    position: relative;
+    color: #c0c0d8;
+    font-size: 14px;
+  }
+
+  ul li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: #f97316;
+    font-weight: 700;
+  }
+
+  code {
+    font-family: 'SF Mono', 'Fira Code', 'Fira Mono', monospace;
+    font-size: 12.5px;
+    background: #1a1a28;
+    color: #e0b3ff;
+    padding: 1px 5px;
+    border-radius: 3px;
+    border: 1px solid #2a2a40;
+  }
+
+  pre {
+    background: #12121e;
+    border: 1px solid #2a2a3d;
+    border-radius: 8px;
+    padding: 20px 22px;
+    overflow-x: auto;
+    margin: 12px 0 20px;
+    position: relative;
+  }
+
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #d4d4f0;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .lang-label {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #444466;
+    font-family: monospace;
+  }
+
+  /* Architecture diagram */
+  .arch {
+    display: grid;
+    grid-template-columns: 1fr 48px 1fr;
+    gap: 0;
+    align-items: center;
+    margin: 16px 0 24px;
+  }
+
+  .arch-box {
+    background: #12121e;
+    border: 1px solid #2a2a3d;
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-size: 13px;
+    font-family: 'SF Mono', monospace;
+    line-height: 1.8;
+  }
+
+  .arch-box.before { border-color: #3d1a1a; }
+  .arch-box.after { border-color: #1a3d2a; }
+
+  .arch-box .label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 8px;
+    font-family: system-ui;
+  }
+
+  .arch-box.before .label { color: #7a3333; }
+  .arch-box.after .label { color: #336655; }
+
+  .arch-box .service {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 0;
+    color: #aaa;
+  }
+
+  .arch-box.before .service { color: #cc8888; }
+  .arch-box.after .service { color: #88cc99; }
+
+  .arch-box .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  .arch-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f97316;
+    font-size: 20px;
+  }
+
+  /* Risk cards */
+  .risks {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .risk-card {
+    background: #12121e;
+    border: 1px solid #2a2a3d;
+    border-left: 3px solid #f97316;
+    border-radius: 6px;
+    padding: 12px 16px;
+  }
+
+  .risk-card strong {
+    color: #fff;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .risk-card p {
+    font-size: 13px;
+    color: #888;
+    margin: 0;
+  }
+
+  /* Removed list */
+  .removed li::before { color: #cc4444; content: '✕'; }
+  .removed li { color: #888; }
+
+  /* Kept list */
+  .kept li::before { color: #3ddc84; content: '✓'; }
+
+  /* Request/response */
+  .req-res {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 12px 0 20px;
+  }
+
+  .req-res-block { }
+  .req-res-block .label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 6px;
+    font-family: monospace;
+  }
+
+  .req-res-block pre { margin: 0; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>Design: Consolidate to Single Vercel Deployment</h1>
+    <div class="meta">
+      <span class="badge">2026-05-20</span>
+      <span class="badge approved">✓ Approved</span>
+    </div>
+  </div>
+
+  <!-- Problem -->
+  <section>
+    <h2>Problem</h2>
+    <p>The portfolio chat is inconsistently available because of a three-system architecture:</p>
+    <ul>
+      <li>Fly.io backend with <code>auto_stop_machines = suspend</code> causes cold-start failures on first visit</li>
+      <li>Supabase PostgreSQL adds a DB dependency that crashes the whole chat if unavailable</li>
+      <li>Local dev requires a Python venv that isn't set up, making backend development painful</li>
+      <li>Two separate deployments (Vercel + Fly.io) to manage for a portfolio site</li>
+    </ul>
+  </section>
+
+  <!-- Goal -->
+  <section>
+    <h2>Goal</h2>
+    <p>One Vercel deployment. Chat works reliably. Local dev is one command. No database.</p>
+  </section>
+
+  <!-- Architecture -->
+  <section>
+    <h2>Architecture</h2>
+    <div class="arch">
+      <div class="arch-box before">
+        <div class="label">Before</div>
+        <div class="service"><span class="dot"></span>Vercel — React</div>
+        <div class="service"><span class="dot"></span>Fly.io — FastAPI</div>
+        <div class="service"><span class="dot"></span>Supabase — PostgreSQL</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box after">
+        <div class="label">After</div>
+        <div class="service"><span class="dot"></span>Vercel — React frontend</div>
+        <div class="service"><span class="dot"></span>Vercel — api/chat.py</div>
+        <div class="service"><span class="dot"></span>knowledge/ files (bundled)</div>
+      </div>
+    </div>
+    <p>Frontend and backend are same-origin. No CORS needed. No cold starts. No DB.</p>
+  </section>
+
+  <!-- File Structure -->
+  <section>
+    <h2>File Structure</h2>
+    <pre><code>portfolio-site/
+├── api/
+│   ├── chat.py              <span style="color:#555"># Vercel Python function entry point</span>
+│   ├── agents/
+│   │   ├── guard_chain.py   <span style="color:#555"># moved from backend/app/agents/chains/</span>
+│   │   ├── rag_chain.py
+│   │   └── personality.py
+│   ├── services/
+│   │   └── llm.py           <span style="color:#555"># moved from backend/app/services/</span>
+│   └── knowledge/           <span style="color:#555"># moved from backend/data/knowledge_base/</span>
+│       ├── education.md
+│       ├── experience.md
+│       ├── projects.md
+│       └── skills.md
+├── src/                     <span style="color:#555"># unchanged except api.js and useChat.js</span>
+├── requirements.txt         <span style="color:#555"># trimmed Python deps (root level for Vercel)</span>
+├── vercel.json              <span style="color:#555"># SPA fallback routing</span>
+├── package.json
+└── vite.config.js</code></pre>
+    <p>The <code>backend/</code> directory is deleted entirely.</p>
+  </section>
+
+  <!-- Backend Changes -->
+  <section>
+    <h2>Backend Changes</h2>
+
+    <h3>api/chat.py</h3>
+    <p>FastAPI app with a single <code>POST /api/chat</code> route. Vercel auto-discovers it and serves it as a serverless function.</p>
+    <div class="req-res">
+      <div class="req-res-block">
+        <div class="label">Request</div>
+        <pre><code>{
+  "query": "string",
+  "history": [
+    {
+      "role": "user|assistant",
+      "content": "string"
+    }
+  ]
+}</code></pre>
+      </div>
+      <div class="req-res-block">
+        <div class="label">Response</div>
+        <pre><code>{
+  "response": "string",
+  "blocked": false
+}</code></pre>
+      </div>
+    </div>
+    <ul>
+      <li>No <code>conversation_id</code> — history is owned by the frontend</li>
+      <li>No DB dependency — no <code>get_db_dependency</code>, no <code>ConversationRepository</code></li>
+      <li>No rate limiting — removed (acceptable for portfolio)</li>
+      <li>Guard chain and RAG chain imported directly, logic unchanged</li>
+    </ul>
+
+    <h3>api/agents/rag_chain.py</h3>
+    <ul>
+      <li>Import paths updated to relative imports</li>
+      <li><code>load_all_knowledge()</code> reads from <code>api/knowledge/</code></li>
+    </ul>
+
+    <h3>api/agents/guard_chain.py</h3>
+    <ul>
+      <li>Unchanged — pure regex logic, no dependencies to update</li>
+    </ul>
+
+    <h3>Removed entirely</h3>
+    <ul class="removed">
+      <li><code>backend/app/database/</code> — DB models, migrations, repositories</li>
+      <li><code>backend/app/api/</code> — FastAPI router (replaced by <code>api/chat.py</code>)</li>
+      <li><code>backend/app/config.py</code> — replaced by <code>os.environ</code> directly</li>
+      <li>ChromaDB, slowapi, sqlalchemy, psycopg2, alembic, uvicorn deps</li>
+    </ul>
+
+    <h3>requirements.txt (root, trimmed)</h3>
+    <pre><code>fastapi
+mangum
+langchain
+langchain-google-genai
+google-generativeai
+pydantic</code></pre>
+
+    <h3>vercel.json</h3>
+    <p>Vercel auto-routes <code>api/chat.py</code> → <code>/api/chat</code>. We only need <code>vercel.json</code> for the SPA fallback:</p>
+    <pre><code>{
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}</code></pre>
+  </section>
+
+  <!-- Frontend Changes -->
+  <section>
+    <h2>Frontend Changes</h2>
+
+    <h3>src/services/api.js</h3>
+    <ul>
+      <li><code>API_URL</code> becomes <code>''</code> (empty string, same-origin — works in both <code>vercel dev</code> and production)</li>
+      <li>Request body gains <code>history</code> field: last 5 messages from current session</li>
+      <li>Remove <code>conversation_id</code> from request/response handling</li>
+      <li>Better error messages: distinguish network errors from server errors</li>
+    </ul>
+
+    <h3>src/hooks/useChat.js</h3>
+    <ul>
+      <li>Pass <code>messages.slice(-5)</code> as <code>history</code> with each request</li>
+      <li>Remove <code>conversationId</code> state entirely</li>
+      <li>Network errors → "Chat is unavailable — try again in a moment"</li>
+    </ul>
+  </section>
+
+  <!-- Local Dev -->
+  <section>
+    <h2>Local Dev</h2>
+    <pre><code>vercel dev</code></pre>
+    <p>Single command runs both Vite (frontend) and the Python function. Requires <code>vercel</code> CLI linked to the project. <code>GOOGLE_API_KEY</code> is pulled automatically from Vercel project env vars.</p>
+    <p>No venv management. No separate backend process. No <code>.env</code> file with DB credentials.</p>
+  </section>
+
+  <!-- Deployment -->
+  <section>
+    <h2>Deployment</h2>
+    <p>Push to <code>main</code> → GitHub Action → <code>vercel deploy --prod</code>. Same as current frontend deploy. The Fly.io GitHub Action is deleted.</p>
+  </section>
+
+  <!-- What's Not Changing -->
+  <section>
+    <h2>What's Not Changing</h2>
+    <ul class="kept">
+      <li>All LangChain + Gemini logic (guard chain, RAG chain, personality prompt)</li>
+      <li>Knowledge base markdown files (content unchanged, just moved)</li>
+      <li>React components, CSS, animations</li>
+      <li>Vercel project configuration (env vars, domain)</li>
+    </ul>
+  </section>
+
+  <!-- Risks -->
+  <section>
+    <h2>Risks</h2>
+    <div class="risks">
+      <div class="risk-card">
+        <strong>Vercel function timeout (10s hobby plan)</strong>
+        <p>Gemini responses for portfolio questions are typically 2–5s. Acceptable. If slow queries become an issue, switch to streaming.</p>
+      </div>
+      <div class="risk-card">
+        <strong>No conversation persistence</strong>
+        <p>Users lose chat history on refresh. Acceptable for a portfolio showcase — the point is the interaction, not the history.</p>
+      </div>
+      <div class="risk-card">
+        <strong>Rate limiting removed</strong>
+        <p>Acceptable for a personal portfolio with low traffic.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
