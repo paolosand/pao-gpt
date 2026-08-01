@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { check, filterResponse } from './_lib/guard.js';
+import { check, filterResponse, scrubConfidential } from './_lib/guard.js';
 import { generate } from './_lib/rag.js';
 import { isGreetingSentinel, GREETING_BLOCKS } from './_lib/personality.js';
 
@@ -85,7 +85,11 @@ export default async function handler(req, res) {
     }
 
     const blocks = await generate(query, history, { projectIds, workIds });
-    const filteredBlocks = blocks.map(block =>
+    // Order matters: scrub client names across the WHOLE response first (a hit
+    // replaces everything with a uniform refusal, so no per-term signal escapes),
+    // then apply the per-block PII redaction to whatever survives.
+    const safeBlocks = scrubConfidential(blocks);
+    const filteredBlocks = safeBlocks.map(block =>
       block.type === 'text'
         ? { ...block, content: filterResponse(block.content) }
         : block
