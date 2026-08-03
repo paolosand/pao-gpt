@@ -13,8 +13,8 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 const GITHUB_FILES = [
   { owner: 'paolosand', repo: 'CHULOOPA', path: 'README.md' },
-  { owner: 'paolosand', repo: 'CHULOOPA', path: 'chuloopa_main.ck' },
-  { owner: 'paolosand', repo: 'CHULOOPA', path: 'spice_detector.ck' },
+  { owner: 'paolosand', repo: 'CHULOOPA', path: 'src/chuloopa_main.ck' },
+  { owner: 'paolosand', repo: 'CHULOOPA', path: 'src/spice_detector.ck' },
   { owner: 'paolosand', repo: 'Violence-Detector-with-Aggressor-Identification', path: 'README.md' },
   { owner: 'paolosand', repo: 'ascii_drone', path: 'README.md' },
 ];
