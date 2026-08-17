@@ -45,7 +45,7 @@ export default function ChatInterface() {
           </div>
         </div>
       )}
-      {messages.length > 0 && <ChipBar onPick={send} />}
+      {messages.length > 0 && <ChipBar onPick={send} disabled={isLoading} />}
       <ChatInput onSend={send} disabled={isLoading} />
     </div>
   );

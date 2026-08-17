@@ -23,3 +23,8 @@
   color: var(--ink);
   border-color: var(--ink);
 }
+
+.inline-chip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

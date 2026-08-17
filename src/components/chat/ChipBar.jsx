@@ -7,7 +7,7 @@ const DEFAULT_CHIPS = [
   'what is Paolo looking for in his next role?',
 ];
 
-export default function ChipBar({ onPick }) {
+export default function ChipBar({ onPick, disabled }) {
   return (
     <div className="chip-bar" role="navigation" aria-label="Quick questions">
       {DEFAULT_CHIPS.map(chip => (
@@ -15,6 +15,7 @@ export default function ChipBar({ onPick }) {
           key={chip}
           className="chip-pill"
           onClick={() => onPick(chip)}
+          disabled={disabled}
         >
           {chip}
         </button>

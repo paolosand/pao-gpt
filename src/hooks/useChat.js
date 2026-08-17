@@ -41,9 +41,17 @@ export function useChat() {
   const [messages, setMessages] = useState(loadStored);
   const messagesRef = useRef(messages);
   const [isLoading, setIsLoading] = useState(false);
+  // Mirrors isLoading for synchronous reads inside callbacks — state alone can't
+  // guard re-entrancy since a callback's closure may see a stale pre-update value.
+  const isLoadingRef = useRef(false);
   const [error, setError] = useState(null);
   const lastUserTextRef = useRef(null);
   const lastApiHistoryRef = useRef([]);
+
+  const setLoading = useCallback((value) => {
+    isLoadingRef.current = value;
+    setIsLoading(value);
+  }, []);
 
   // Persist the conversation for this tab session. Skip while streaming so we don't
   // store half-finished assistant messages.
@@ -59,7 +67,7 @@ export function useChat() {
     };
     messagesRef.current = [...messagesRef.current, emptyAssistant];
     setMessages(prev => [...prev, emptyAssistant]);
-    setIsLoading(true);
+    setLoading(true);
     setError(null);
 
     let streamText = '';
@@ -90,18 +98,25 @@ export function useChat() {
             return msgs;
           });
         }
-        setIsLoading(false);
+        setLoading(false);
       },
       onError: (msg) => {
         messagesRef.current = messagesRef.current.slice(0, -1);
         setMessages(prev => prev.slice(0, -1));
         setError(msg || 'Chat is unavailable — try again in a moment');
-        setIsLoading(false);
+        setLoading(false);
       },
     });
-  }, []);
+  }, [setLoading]);
 
   const send = useCallback(async (userMessage) => {
+    // Re-entrancy guard: without this, any caller wired to send() — chip buttons,
+    // a future double-click, anything — can fire while a stream is already in
+    // flight. Both requests would then race to mutate messages via the same
+    // "last message" index, corrupting the conversation. Checked via ref, not the
+    // isLoading state value, so it's accurate even inside this closure.
+    if (isLoadingRef.current) return;
+
     const userMsg = {
       role: 'user',
       content: userMessage,
@@ -124,10 +139,12 @@ export function useChat() {
 
   // Greeting: no user message added to history, just an assistant message
   const greet = useCallback(async () => {
+    if (isLoadingRef.current) return;
     await _executeStream('__greeting', []);
   }, [_executeStream]);
 
   const retry = useCallback(async () => {
+    if (isLoadingRef.current) return;
     const text = lastUserTextRef.current;
     if (!text) return;
     await _executeStream(text, lastApiHistoryRef.current);

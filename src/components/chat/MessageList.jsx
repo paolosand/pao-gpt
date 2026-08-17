@@ -10,12 +10,12 @@ import { annotateEmbeds } from './embeds/annotateEmbeds';
 import { useTypewriter, usePrefersReducedMotion } from '../../hooks/useTypewriter';
 import './MessageList.css';
 
-function InlineChips({ items, onPick }) {
+function InlineChips({ items, onPick, disabled }) {
   if (!items || items.length === 0) return null;
   return (
     <div className="inline-chips">
       {items.map(chip => (
-        <button key={chip} className="inline-chip" onClick={() => onPick(chip)}>
+        <button key={chip} className="inline-chip" onClick={() => onPick(chip)} disabled={disabled}>
           {chip}
         </button>
       ))}
@@ -33,7 +33,7 @@ function renderCard(block, i, onExpand) {
   return null;
 }
 
-function AssistantBlocks({ blocks = [], animate = false, onReveal, onPick, onExpand }) {
+function AssistantBlocks({ blocks = [], animate = false, onReveal, onPick, onExpand, chipsDisabled }) {
   const reducedMotion = usePrefersReducedMotion();
   const typing = animate && !reducedMotion;
 
@@ -55,7 +55,7 @@ function AssistantBlocks({ blocks = [], animate = false, onReveal, onPick, onExp
       {done && embeds.length > 0 && (
         <div className={`msg-embeds${typing ? ' msg-embeds-enter' : ''}`}>
           {embeds.map((block, i) => {
-            if (block.type === 'chips')   return <InlineChips key={i} items={block.items} onPick={onPick} />;
+            if (block.type === 'chips')   return <InlineChips key={i} items={block.items} onPick={onPick} disabled={chipsDisabled} />;
             if (block.type === 'contact') return <ContactCard key={i} subject={block.content} />;
             if (block.type === 'project' || block.type === 'work' || block.type === 'music') {
               return renderCard(block, i, onExpand);
@@ -99,6 +99,7 @@ export default function MessageList({ messages, isLoading, onPick }) {
                   onReveal={scrollToEnd}
                   onPick={onPick}
                   onExpand={setOpenEmbed}
+                  chipsDisabled={isLoading}
                 />}
           </div>
         </div>

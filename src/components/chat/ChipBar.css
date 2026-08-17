@@ -24,3 +24,8 @@
   color: var(--ink);
   border-color: var(--ink);
 }
+
+.chip-pill:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
