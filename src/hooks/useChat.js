@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { sendMessageStream } from '../services/api';
 
 const STORAGE_KEY = 'paogpt:session';
+const SESSION_ID_KEY = 'paogpt:sessionId';
 
 function loadStored() {
   try {
@@ -10,6 +11,29 @@ function loadStored() {
     return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
+  }
+}
+
+// One id per conversation, reused across all turns so Langfuse groups them into a
+// single session. Persisted in sessionStorage alongside the messages so a page
+// reload continues the same conversation/session rather than starting a new one.
+function loadOrCreateSessionId() {
+  try {
+    const existing = sessionStorage.getItem(SESSION_ID_KEY);
+    if (existing) return existing;
+    const id = crypto.randomUUID();
+    sessionStorage.setItem(SESSION_ID_KEY, id);
+    return id;
+  } catch {
+    return crypto.randomUUID();
+  }
+}
+
+function saveSessionId(id) {
+  try {
+    sessionStorage.setItem(SESSION_ID_KEY, id);
+  } catch {
+    // storage unavailable — non-fatal, the id still works for this page life
   }
 }
 
@@ -40,6 +64,10 @@ function blocksToContent(blocks) {
 export function useChat() {
   const [messages, setMessages] = useState(loadStored);
   const messagesRef = useRef(messages);
+  // Lazy ref init (not useRef(loadOrCreateSessionId())): that form calls the
+  // initializer on every render, not just the first.
+  const sessionIdRef = useRef(null);
+  if (sessionIdRef.current === null) sessionIdRef.current = loadOrCreateSessionId();
   const [isLoading, setIsLoading] = useState(false);
   // Mirrors isLoading for synchronous reads inside callbacks — state alone can't
   // guard re-entrancy since a callback's closure may see a stale pre-update value.
@@ -74,6 +102,7 @@ export function useChat() {
     let streamEmbeds = [];
 
     await sendMessageStream(userText, apiHistory, {
+      sessionId: sessionIdRef.current,
       onToken: (text) => {
         streamText += text;
         setMessages(prev => {
@@ -159,6 +188,10 @@ export function useChat() {
     lastUserTextRef.current = null;
     lastApiHistoryRef.current = [];
     clearStored();
+    // A restart is a new conversation — give it its own session in Langfuse
+    // rather than lumping it into the one being abandoned.
+    sessionIdRef.current = crypto.randomUUID();
+    saveSessionId(sessionIdRef.current);
   }, []);
 
   return { messages, isLoading, error, send, greet, retry, clearError, reset };

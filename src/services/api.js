@@ -1,4 +1,4 @@
-export async function sendMessageStream(message, history = [], { onToken, onEmbeds, onDone, onError } = {}) {
+export async function sendMessageStream(message, history = [], { sessionId, onToken, onEmbeds, onDone, onError } = {}) {
   let response;
   try {
     response = await fetch('/api/chat', {
@@ -7,6 +7,7 @@ export async function sendMessageStream(message, history = [], { onToken, onEmbe
       body: JSON.stringify({
         query: message,
         history: history.map(({ role, content }) => ({ role, content })),
+        sessionId,
       }),
     });
   } catch {

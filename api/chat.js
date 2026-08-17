@@ -50,7 +50,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  const { query, history = [] } = req.body ?? {};
+  const { query, history = [], sessionId } = req.body ?? {};
 
   if (!query || typeof query !== 'string' || query.trim().length === 0) {
     res.status(400).json({ error: 'query is required and must be a non-empty string' });
@@ -64,6 +64,12 @@ export default async function handler(req, res) {
     res.status(400).json({ error: 'history must be an array' });
     return;
   }
+  // Groups a conversation's traces in Langfuse — telemetry only, so a missing or
+  // malformed value is never a request error, just an ungrouped trace. Capped to
+  // Langfuse's own 200-char attribute limit.
+  const traceSessionId = typeof sessionId === 'string' && sessionId.length > 0
+    ? sessionId.slice(0, 200)
+    : undefined;
 
   setSseHeaders(res);
 
@@ -73,7 +79,7 @@ export default async function handler(req, res) {
     // (which only ever touches the single currently-active observation) — the latter
     // silently drops unrecognized fields rather than erroring, so this is easy to get
     // wrong quietly. Confirmed by direct trace inspection during instrumentation.
-    await propagateAttributes({ tags: ['pao-gpt'] }, async () => {
+    await propagateAttributes({ tags: ['pao-gpt'], ...(traceSessionId && { sessionId: traceSessionId }) }, async () => {
       await startActiveObservation('chat-response', async () => {
         updateActiveObservation({
           input: query,
