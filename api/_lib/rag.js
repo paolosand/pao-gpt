@@ -1,4 +1,5 @@
 import { GoogleGenAI, Type } from '@google/genai';
+import { startObservation } from '@langfuse/tracing';
 import { buildSystemPrompt } from './personality.js';
 import { queryRelevant } from './retrieval.js';
 import { withRetry } from './retry.js';
@@ -80,13 +81,42 @@ export async function generate(query, history, { projectIds = [], workIds = [] }
     `\n\n--- QUESTION ---\n${query}`,
   ].join('');
 
-  const response = await withRetry(() => client.models.generateContent({
-    model: MODEL,
-    contents: prompt,
-    config: GENERATION_CONFIG,
-  }));
+  const generation = startObservation(
+    'generate-response',
+    { model: MODEL, input: prompt },
+    { asType: 'generation' },
+  );
 
+  let response;
+  try {
+    response = await withRetry(() => client.models.generateContent({
+      model: MODEL,
+      contents: prompt,
+      config: GENERATION_CONFIG,
+    }));
+  } catch (err) {
+    generation.update({ level: 'ERROR', statusMessage: err.message }).end();
+    throw err;
+  }
+
+  const usage = response.usageMetadata ?? {};
   const blocks = parseBlocks(response.text);
+
+  // Traced verbatim (pre-scrub): the LangfuseSpanProcessor mask() in tracing.js is the
+  // enforcement point that strips confidential terms before export, not this call site.
+  // That also means a redaction shows up here as a visible signal of a caught leak,
+  // instead of silently looking identical to a clean response.
+  generation
+    .update({
+      output: blocks ?? response.text,
+      usageDetails: {
+        input: usage.promptTokenCount,
+        output: usage.candidatesTokenCount,
+        total: usage.totalTokenCount,
+      },
+    })
+    .end();
+
   if (blocks) return blocks;
 
   const finishReason = response?.candidates?.[0]?.finishReason;

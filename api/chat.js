@@ -1,6 +1,9 @@
+import './_lib/tracing.js'; // must be first: registers the OTel SDK before any span is created
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { startActiveObservation, updateActiveObservation, propagateAttributes } from '@langfuse/tracing';
+import { flushTracing } from './_lib/tracing.js';
 import { check, filterResponse, scrubConfidential } from './_lib/guard.js';
 import { generate } from './_lib/rag.js';
 import { isGreetingSentinel, GREETING_BLOCKS } from './_lib/personality.js';
@@ -65,48 +68,77 @@ export default async function handler(req, res) {
   setSseHeaders(res);
 
   try {
-    // Greeting sentinel: return hardcoded blocks, skip RAG and guard
-    if (isGreetingSentinel(query)) {
-      const textBlock = GREETING_BLOCKS.find(b => b.type === 'text');
-      const embedBlocks = GREETING_BLOCKS.filter(b => b.type !== 'text');
-      if (textBlock) streamText(res, textBlock.content);
-      if (embedBlocks.length > 0) sendEvent(res, { type: 'embeds', blocks: embedBlocks });
-      res.write('data: [DONE]\n\n');
-      res.end();
-      return;
-    }
+    // tags is a trace-level attribute: it must go through propagateAttributes (context
+    // propagation to every observation in this callback), not updateActiveObservation
+    // (which only ever touches the single currently-active observation) — the latter
+    // silently drops unrecognized fields rather than erroring, so this is easy to get
+    // wrong quietly. Confirmed by direct trace inspection during instrumentation.
+    await propagateAttributes({ tags: ['pao-gpt'] }, async () => {
+      await startActiveObservation('chat-response', async () => {
+        updateActiveObservation({
+          input: query,
+          metadata: { historyLength: history.length },
+        });
 
-    const guardResult = check(query);
-    if (guardResult.isMalicious) {
-      streamText(res, guardResult.response);
-      res.write('data: [DONE]\n\n');
-      res.end();
-      return;
-    }
+        try {
+          // Greeting sentinel: return hardcoded blocks, skip RAG and guard
+          if (isGreetingSentinel(query)) {
+            const textBlock = GREETING_BLOCKS.find(b => b.type === 'text');
+            const embedBlocks = GREETING_BLOCKS.filter(b => b.type !== 'text');
+            if (textBlock) streamText(res, textBlock.content);
+            if (embedBlocks.length > 0) sendEvent(res, { type: 'embeds', blocks: embedBlocks });
+            updateActiveObservation({ output: textBlock?.content ?? '', metadata: { outcome: 'greeting' } });
+            res.write('data: [DONE]\n\n');
+            res.end();
+            return;
+          }
 
-    const blocks = await generate(query, history, { projectIds, workIds });
-    // Order matters: scrub client names across the WHOLE response first (a hit
-    // replaces everything with a uniform refusal, so no per-term signal escapes),
-    // then apply the per-block PII redaction to whatever survives.
-    const safeBlocks = scrubConfidential(blocks);
-    const filteredBlocks = safeBlocks.map(block =>
-      block.type === 'text'
-        ? { ...block, content: filterResponse(block.content) }
-        : block
-    );
+          const guardResult = check(query);
+          if (guardResult.isMalicious) {
+            streamText(res, guardResult.response);
+            updateActiveObservation({
+              output: guardResult.response,
+              metadata: { outcome: 'blocked', reason: guardResult.reason },
+            });
+            res.write('data: [DONE]\n\n');
+            res.end();
+            return;
+          }
 
-    const textContent = filteredBlocks
-      .filter(b => b.type === 'text')
-      .map(b => b.content)
-      .join('\n\n');
+          const blocks = await generate(query, history, { projectIds, workIds });
+          // Order matters: scrub client names across the WHOLE response first (a hit
+          // replaces everything with a uniform refusal, so no per-term signal escapes),
+          // then apply the per-block PII redaction to whatever survives.
+          const safeBlocks = scrubConfidential(blocks);
+          const filteredBlocks = safeBlocks.map(block =>
+            block.type === 'text'
+              ? { ...block, content: filterResponse(block.content) }
+              : block
+          );
 
-    const embedBlocks = filteredBlocks.filter(b => b.type !== 'text');
+          const textContent = filteredBlocks
+            .filter(b => b.type === 'text')
+            .map(b => b.content)
+            .join('\n\n');
 
-    streamText(res, textContent);
-    if (embedBlocks.length > 0) sendEvent(res, { type: 'embeds', blocks: embedBlocks });
+          const embedBlocks = filteredBlocks.filter(b => b.type !== 'text');
 
-    res.write('data: [DONE]\n\n');
-    res.end();
+          updateActiveObservation({
+            output: textContent,
+            metadata: { outcome: 'generated', embedCount: embedBlocks.length },
+          });
+
+          streamText(res, textContent);
+          if (embedBlocks.length > 0) sendEvent(res, { type: 'embeds', blocks: embedBlocks });
+
+          res.write('data: [DONE]\n\n');
+          res.end();
+        } catch (err) {
+          updateActiveObservation({ level: 'ERROR', statusMessage: err.message });
+          throw err;
+        }
+      });
+    });
   } catch (err) {
     console.error('Chat handler error:', err);
     if (!res.headersSent) {
@@ -115,5 +147,11 @@ export default async function handler(req, res) {
       sendEvent(res, { type: 'error', message: 'Something went wrong — try again in a moment' });
       res.end();
     }
+  } finally {
+    // Awaited, not waitUntil(): the SSE response is already fully sent by this point
+    // (res.end() above), so this can't add latency for the client — it only keeps the
+    // function invocation itself open until the trace is actually delivered, which the
+    // platform guarantees regardless of whether request-context/waitUntil is wired up.
+    await flushTracing();
   }
 }
