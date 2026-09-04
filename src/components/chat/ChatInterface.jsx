@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useChat } from '../../hooks/useChat';
+import { useVisualViewportHeight } from '../../hooks/useVisualViewportHeight';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import ChipBar from './ChipBar';
@@ -7,6 +8,8 @@ import './ChatInterface.css';
 
 export default function ChatInterface() {
   const { messages, isLoading, error, send, greet, retry, clearError, reset } = useChat();
+
+  useVisualViewportHeight();
 
   useEffect(() => {
     if (messages.length === 0) greet();
