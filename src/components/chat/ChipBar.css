@@ -3,16 +3,15 @@
   flex-wrap: wrap;
   gap: 5px;
   padding: 8px 12px;
-  border-top: 1px solid var(--ink-rule);
+  border-top: 1px solid var(--ink);
   background: var(--paper-2);
 }
 
 .chip-pill {
-  font-family: var(--font-mono);
   font-size: 10px;
   color: var(--ink-mute);
   background: var(--paper);
-  border: 1px solid var(--ink-rule);
+  border: 1px solid var(--ink);
   padding: 3px 9px;
   cursor: pointer;
   white-space: nowrap;
@@ -28,4 +27,18 @@
 .chip-pill:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* Below 880px, the four chips no longer fit two-per-row without cramping,
+   so scroll the row horizontally in place instead of wrapping each chip
+   onto its own line. */
+@media (max-width: 880px) {
+  .chip-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .chip-bar::-webkit-scrollbar { display: none; }
+  .chip-pill { flex: 0 0 auto; }
 }
