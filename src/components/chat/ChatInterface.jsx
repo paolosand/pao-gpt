@@ -33,20 +33,22 @@ export default function ChatInterface() {
       </div>
       <div className="chat-paper">
         <MessageList messages={messages} isLoading={isLoading} onPick={send} />
-      </div>
-      {error && (
-        <div className="chat-error" role="alert">
-          <span className="chat-error-msg">⚠ {error}</span>
-          <div className="chat-error-actions">
-            <button className="chat-error-retry" onClick={retry} disabled={isLoading}>
-              ↺ retry
-            </button>
-            <button className="chat-error-dismiss" onClick={clearError}>✕</button>
-          </div>
+        <div className="chat-footer">
+          {error && (
+            <div className="chat-error" role="alert">
+              <span className="chat-error-msg">⚠ {error}</span>
+              <div className="chat-error-actions">
+                <button className="chat-error-retry" onClick={retry} disabled={isLoading}>
+                  ↺ retry
+                </button>
+                <button className="chat-error-dismiss" onClick={clearError}>✕</button>
+              </div>
+            </div>
+          )}
+          {messages.length > 0 && <ChipBar onPick={send} disabled={isLoading} />}
+          <ChatInput onSend={send} disabled={isLoading} />
         </div>
-      )}
-      {messages.length > 0 && <ChipBar onPick={send} disabled={isLoading} />}
-      <ChatInput onSend={send} disabled={isLoading} />
+      </div>
     </div>
   );
 }

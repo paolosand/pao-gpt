@@ -5,7 +5,10 @@ export default function ChatInput({ onSend, disabled }) {
   const [input, setInput] = useState('');
   const inputRef = useRef(null);
 
-  useEffect(() => { inputRef.current?.focus(); }, []);
+  useEffect(() => {
+    const isCoarsePointer = window.matchMedia?.('(pointer: coarse)').matches;
+    if (!isCoarsePointer) inputRef.current?.focus();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
