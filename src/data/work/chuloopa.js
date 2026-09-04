@@ -85,7 +85,7 @@ and the hardest question: how do you evaluate a variation? each variant has to k
           items: [
             '4.8m-param grid transformer · trained on 12,085 bar pairs (expanded groove midi dataset)',
             '~25 ms beatbox-to-playback latency · mfcc-13 knn trains in under a second',
-            '82.5% of input hit positions preserved at low spice · 5.4 → 12.7 hits/bar across the spice axis',
+            '92% of input hit positions preserved at low spice · 7.1 → 14.1 hits/bar across the spice axis',
             'full variation bank generated in 3–5 s, entirely offline, on consumer cpu',
             'accepted to aimc 2026 · berlin · september 2026',
           ],
