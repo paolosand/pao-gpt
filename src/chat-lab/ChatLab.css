@@ -1,0 +1,225 @@
+/* ===================================================================
+   chat-lab — standalone, from-scratch chat shell.
+   Design tokens copied from src/index.css / DESIGN.md — no dependency
+   on the main site's stylesheet, deliberately.
+   =================================================================== */
+:root {
+  --paper: #F2EBDA;
+  --paper-2: #E9E0C8;
+  --ink: #1A130A;
+  --ink-mute: #7A6C53;
+  --ink-faint: #B6A988;
+  --c-blue: #2841E8;
+  --c-pink: #F0457B;
+  --c-lemon: #E8B91A;
+}
+
+* { box-sizing: border-box; }
+
+html { margin: 0; padding: 0; }
+
+/* position: fixed + inset: 0 pins the page to the viewport so the body
+   itself never scrolls or rubber-bands on iOS — the only thing that
+   scrolls is .lab-paper below. That removes one whole class of
+   "input pushed off-screen" bugs before the keyboard even factors in. */
+body {
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root { height: 100%; }
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+::selection { background: var(--c-lemon); color: var(--ink); }
+
+/* ===================================================================
+   SHELL
+   Height is set inline from JS via window.visualViewport.height — the
+   one measurement that reflects the real visible area once a mobile
+   keyboard opens (100dvh does not shrink on iOS Safari). 100dvh here is
+   only the fallback for the rare environment without visualViewport.
+   =================================================================== */
+.lab-shell {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.lab-hdr {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: var(--ink);
+  color: var(--paper);
+  border-bottom: 1.5px solid var(--ink);
+}
+.lab-hdr-mark {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-lemon);
+}
+.lab-hdr-restart {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--paper);
+  border: 1px solid rgba(242, 235, 218, 0.35);
+  padding: 5px 10px;
+  transition: background 0.08s ease, color 0.08s ease, border-color 0.08s ease;
+}
+.lab-hdr-restart:hover {
+  background: var(--c-lemon);
+  color: var(--ink);
+  border-color: var(--c-lemon);
+}
+
+.lab-paper {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 24px 20px;
+}
+
+.lab-msgs {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.lab-msg {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.lab-msg .from {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  text-align: right;
+  padding-top: 4px;
+  color: var(--ink-mute);
+}
+.lab-msg.user .from { color: var(--c-blue); }
+.lab-msg.assistant .from { color: var(--c-pink); }
+
+.lab-msg .bubble {
+  border: 1.5px solid var(--ink);
+  padding: 12px 16px;
+  box-shadow: 3px 3px 0 var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+.lab-msg.user .bubble { background: var(--ink); color: var(--paper); }
+.lab-msg.assistant .bubble { background: var(--paper-2); color: var(--ink); }
+
+.bubble.typing { color: var(--ink-mute); }
+.typing-caret {
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--c-pink);
+  font-weight: 800;
+  animation: caret-blink 1s step-end infinite;
+}
+@keyframes caret-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .typing-caret { animation: none; }
+}
+
+/* input */
+.lab-input {
+  flex: 0 0 auto;
+  border-top: 1.5px solid var(--ink);
+  padding: 12px 16px;
+  background: var(--paper-2);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  /* Clears the home-indicator / gesture-bar area on notched phones. */
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+.lab-input .field {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  padding: 10px 14px;
+  gap: 10px;
+}
+.lab-input .field .caret { color: var(--c-pink); font-weight: 800; }
+.lab-input input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  font: inherit;
+  color: var(--ink);
+  /* 16px, not the site's usual 14px body size: below 16px, iOS Safari
+     zooms the whole page in on focus, which is its own keyboard bug. */
+  font-size: 16px;
+}
+.lab-input input::placeholder { color: var(--ink-faint); }
+.lab-input .send {
+  padding: 11px 20px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  border: 1.5px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.lab-input .send:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+.lab-input .send:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.lab-input .send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.lab-input .send-glyph { margin-left: 6px; color: var(--c-lemon); }
+
+@media (max-width: 640px) {
+  .lab-paper { padding: 16px 14px; }
+  .lab-msg { grid-template-columns: 44px 1fr; gap: 8px; }
+  .lab-msg .from { font-size: 9px; }
+  .lab-input { padding: 10px 12px; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+  .lab-input .send { padding: 11px 16px; }
+}

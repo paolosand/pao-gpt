@@ -6,5 +6,5 @@
     "api/ticker.js": { "maxDuration": 30 }
   },
   "crons": [{ "path": "/api/ticker?cron=1", "schedule": "0 9 * * *" }],
-  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }]
+  "rewrites": [{ "source": "/((?!api/|chat-lab\\.html).*)", "destination": "/index.html" }]
 }
