@@ -99,7 +99,12 @@ button {
   padding-bottom: 0;
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  /* svh (not dvh): dvh can paint at its "toolbar hidden" value on first
+     load, before the address bar has actually settled, leaving content
+     sized taller than what's really visible until something forces a
+     recalc. svh pins to the toolbar-visible worst case, so the shell
+     never renders past the bottom of the actual screen. */
+  height: 100svh;
   overflow: hidden;
 }
 
