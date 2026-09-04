@@ -24,7 +24,6 @@
 html, body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
   background: var(--paper);
   color: var(--ink);
   font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
