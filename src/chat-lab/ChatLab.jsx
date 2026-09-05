@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import SiteHeader from './SiteHeader.jsx';
 
 const GREETING =
   "hey — this is a from-scratch chat shell with no assistant wired up. type something and I'll reply with a canned line.";
@@ -92,54 +93,58 @@ export default function ChatLab() {
   };
 
   return (
-    <div className="lab-shell" style={vh ? { height: `${vh}px` } : undefined}>
-      <div className="chat-hdr">
-        <span className="chat-hdr-mark">pao-gpt</span>
-        <button
-          className="chat-hdr-restart"
-          onClick={handleRestart}
-          aria-label="Start a new conversation"
-        >
-          ↺ restart
-        </button>
-      </div>
+    <div className="lab-app" style={vh ? { height: `${vh}px` } : undefined}>
+      <SiteHeader />
 
-      <div className="lab-paper" ref={paperRef}>
-        <div className="lab-msgs">
-          {messages.map((m) => (
-            <div key={m.id} className={`lab-msg ${m.role}`}>
-              <span className="from">{m.role === 'user' ? 'you' : 'bot'}</span>
-              <div className="bubble">{m.text}</div>
-            </div>
-          ))}
-          {isTyping && (
-            <div className="lab-msg assistant">
-              <span className="from">bot</span>
-              <div className="bubble typing">
-                typing<span className="typing-caret">▌</span>
+      <div className="lab-shell">
+        <div className="chat-hdr">
+          <span className="chat-hdr-mark">pao-gpt</span>
+          <button
+            className="chat-hdr-restart"
+            onClick={handleRestart}
+            aria-label="Start a new conversation"
+          >
+            ↺ restart
+          </button>
+        </div>
+
+        <div className="lab-paper" ref={paperRef}>
+          <div className="lab-msgs">
+            {messages.map((m) => (
+              <div key={m.id} className={`lab-msg ${m.role}`}>
+                <span className="from">{m.role === 'user' ? 'you' : 'bot'}</span>
+                <div className="bubble">{m.text}</div>
               </div>
-            </div>
-          )}
+            ))}
+            {isTyping && (
+              <div className="lab-msg assistant">
+                <span className="from">bot</span>
+                <div className="bubble typing">
+                  typing<span className="typing-caret">▌</span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
 
-      <form className="lab-input" onSubmit={handleSubmit}>
-        <div className="field">
-          <span className="caret">▌</span>
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="type a message…"
-            enterKeyHint="send"
-            autoComplete="off"
-          />
-        </div>
-        <button type="submit" className="send" disabled={!input.trim()}>
-          send <span className="send-glyph">↵</span>
-        </button>
-      </form>
+        <form className="lab-input" onSubmit={handleSubmit}>
+          <div className="field">
+            <span className="caret">▌</span>
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="type a message…"
+              enterKeyHint="send"
+              autoComplete="off"
+            />
+          </div>
+          <button type="submit" className="send" disabled={!input.trim()}>
+            send <span className="send-glyph">↵</span>
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
