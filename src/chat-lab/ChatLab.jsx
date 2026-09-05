@@ -93,9 +93,13 @@ export default function ChatLab() {
 
   return (
     <div className="lab-shell" style={vh ? { height: `${vh}px` } : undefined}>
-      <div className="lab-hdr">
-        <span className="lab-hdr-mark">chat-lab</span>
-        <button className="lab-hdr-restart" onClick={handleRestart} aria-label="Restart conversation">
+      <div className="chat-hdr">
+        <span className="chat-hdr-mark">pao-gpt</span>
+        <button
+          className="chat-hdr-restart"
+          onClick={handleRestart}
+          aria-label="Start a new conversation"
+        >
           ↺ restart
         </button>
       </div>

@@ -63,34 +63,39 @@ button {
   overflow: hidden;
 }
 
-.lab-hdr {
+/* Copied 1:1 from the real ChatInterface header (src/index.css .chat-hdr*)
+   so the lab's chrome is pixel-identical to production. */
+.chat-hdr {
   flex: 0 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 16px;
+  padding: 8px 14px;
   background: var(--ink);
   color: var(--paper);
   border-bottom: 1.5px solid var(--ink);
 }
-.lab-hdr-mark {
+.chat-hdr-mark {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--c-lemon);
 }
-.lab-hdr-restart {
+.chat-hdr-restart {
+  font-family: inherit;
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-weight: 600;
   color: var(--paper);
+  background: none;
   border: 1px solid rgba(242, 235, 218, 0.35);
-  padding: 5px 10px;
+  padding: 4px 10px;
+  cursor: pointer;
   transition: background 0.08s ease, color 0.08s ease, border-color 0.08s ease;
 }
-.lab-hdr-restart:hover {
+.chat-hdr-restart:hover {
   background: var(--c-lemon);
   color: var(--ink);
   border-color: var(--c-lemon);
